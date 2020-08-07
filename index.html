@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="cloud.js"></script>
+  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.19/topojson.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+  <title>Drug usage and crimes in Australia</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKHna7FBmZu985uSFIKv2EOQ0ZK2FZV10&callback=initMap&libraries=&v=weekly"
+      defer
+    ></script>
+  <style>
+  .fakeimg {
+    height: 200px;
+    background: #aaa;
+  }
+  </style>
+</head>
+<body>
+
+<div class="jumbotron text-center" style="margin-bottom:0;background: black">
+  <h1 style="color:white">Drug Usage and Crimes in Australia</h1>
+  <h4 style="color:white">A comprehensive study on the influence on gender and age group along with the trends of usage and different drugs!</h4> 
+</div>
+
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+  <a class="navbar-brand" href="#index"><h6>Home</h6></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="collapsibleNavbar">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="female.html"><h6>Drug Usage over years</h6></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="male.html"><h6>Gender comparisons</h6></a>
+      </li> 
+    </ul>
+  </div>  
+</nav>
+
+<div class="container" style="margin-top:30px">
+  <div class="row">
+    <div class="col-sm-4">
+      <h2>Drug induced incidents</h2>      
+      <div id="word" >
+        <img src="back.png" alt="Italian Trulli" width="350">
+      </div>
+
+      <p>These are the crimes related to drug usage reported by police across different states.</p>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+    <h2>Quantities of drugs captured by police across states and territories</h2>
+
+    
+      <div id="map"></div>
+
+      <p>Cocaine quantity is referred here with highest in Victoria! </p>
+      
+<br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        
+      <div id="word" >
+        <img src="side.png" alt="Italian Trulli" width="400" height="300">
+      </div>
+    </div>
+    <div class="col-sm-8">
+      <h2>Crimes recorded during 2018-2019</h2>
+      <svg class="chart"></svg>
+      <h5>Drug offences constitute the highest numeber in the country as compared to other crimes.</h5>
+      <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+      <h2>Drug usage in different age groups from a period of 2000-2016</h2>
+
+
+<p id="chart"></p>
+
+
+
+  </div>
+
+
+
+<style>
+  @import url(http://fonts.googleapis.com/css?family=Droid+Sans|Droid+Sans+Mono);
+
+
+
+#footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 30px;            /* Footer height */
+}
+
+#map {
+  height: 20%;
+}
+
+#chart {
+  margin-left: 0px;
+  width: 30%;
+  height: 506px;
+}
+
+text {
+  font: 10px sans-serif;
+}
+
+.dot {
+  stroke: #000;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.label {
+  fill: #777;
+}
+
+.states {
+    fill: #222;
+  }
+  
+.states :hover {
+    fill: orange;
+  }
+
+.country {
+  font: 400 48px"Helvetica Neue";
+  text-anchor: center;
+  fill: #777;
+}
+
+.year.label {
+  font: 400 120px"Helvetica Neue";
+  fill: #ddd;
+}
+
+.year.label.active {
+  fill: #aaa;
+}
+
+.hidden {
+  color: #f00;
+}
+
+.visible {
+  color: #0f0;
+}
+
+.overlay {
+  fill: none;
+  pointer-events: all;
+  cursor: ns-resize;
+}
+#head {
+  background-image: "back.png";
+}
+
+.bar {
+      fill: steelblue;
+    }
+    
+    .bar:hover {
+      fill: lightblue;
+    }
+    
+    .axis text {
+      font: 10px sans-serif;
+    }
+    
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+    
+    .x.axis path {
+      display: none;
+    }
+    
+    .tooltip {
+      position: absolute;
+      padding: 10px;
+      font: 12px sans-serif;
+      background: #222;
+      color: #fff;
+      border: 0px;
+      border-radius: 8px;
+      pointer-events: none;
+      opacity: 0.9;
+      visibility: hidden;
+    }
+
+.d3-tip {
+  line-height: 1;
+  font-family: Lucida Grande, Lucida Sans Unicode, Arial, Helvetica;
+  font-size: 12px;
+  padding: 12px;
+  background: #EFEFEF;
+  color: #253756;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #000000;
+}
+
+body {
+  font: 10px sans-serif;
+}
+
+.bar rect {
+  shape-rendering: crispEdges;
+}
+
+.bar text {
+  fill: #999999;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+</style>
+
+<script>
+  var data = [{
+    "name": "14-19",
+    "sector": "1",
+    "years": [
+      [2000, 2000],
+      [2001, 2001],
+      [2002, 2002],
+      [2003, 2003],
+      [2004, 2004],
+      [2005, 2005],
+      [2006, 2006],
+      [2007, 2007],
+      [2008, 2008],
+      [2009, 2009],
+      [2010, 2010],
+      [2011, 2011],
+      [2012, 2012],
+      [2013, 2013],
+      [2014, 2014],
+      [2015, 2015],
+      [2016, 2016]
+      
+    ],
+    "premium": [
+      [2000, 27.7],
+      [2001, 27.7],
+      [2002, 27.7],
+      [2003, 21.3],
+      [2004, 21.3],
+      [2005, 21.3],
+      [2006, 16.6],
+      [2007, 16.6],
+      [2008, 16.6],
+      [2009, 18.2],
+      [2010, 18.2],
+      [2011, 18.2],
+      [2012, 17.6],
+      [2013, 17.6],
+      [2014, 17.6],
+      [2015, 15.9],
+      [2016, 15.9]
+    ],
+    "claims": [
+      [2000, 6],
+      [2001, 8],
+      [2002, 9],
+      [2003, 12],
+      [2004, 15],
+      [2005, 18],
+      [2006, 11],
+      [2007, 23],
+      [2008, 22],
+      [2009, 29],
+      [2010, 32],
+      [2011, 26],
+      [2012, 34],
+      [2013, 47],
+      [2014, 69],
+      [2015, 72],
+      [2016, 81]
+    ]
+  }, {
+    "name": "20-29",
+    "sector": "2",
+    "years": [
+      [2000, 2000],
+      [2001, 2001],
+      [2002, 2002],
+      [2003, 2003],
+      [2004, 2004],
+      [2005, 2005],
+      [2006, 2006],
+      [2007, 2007],
+      [2008, 2008],
+      [2009, 2009],
+      [2010, 2010],
+      [2011, 2011],
+      [2012, 2012],
+      [2013, 2013],
+      [2014, 2014],
+      [2015, 2015],
+      [2016, 2016]
+    ],
+    "premium": [
+      [2000, 34.6],
+      [2001, 34.6],
+      [2002, 34.6],
+      [2003, 31.5],
+      [2004, 31.5],
+      [2005, 31.5],
+      [2006, 27.7],
+      [2007, 27.7],
+      [2008, 27.7],
+      [2009, 27.5],
+      [2010, 27.5],
+      [2011, 27.5],
+      [2012, 27.3],
+      [2013, 27.3],
+      [2014, 27.3],
+      [2015, 28.2],
+      [2016, 28.2]
+    ],
+    "claims": [
+      [2000, 2],
+      [2001, 3],
+      [2002, 3],
+      [2003, 2],
+      [2004, 4],
+      [2005, 7],
+      [2006, 11],
+      [2007, 16],
+      [2008, 12],
+      [2009, 15],
+      [2010, 23],
+      [2011, 18],
+      [2012, 26],
+      [2013, 36],
+      [2014, 47],
+      [2015, 36],
+      [2016, 56]
+    ]
+  },{
+    "name": "30-39",
+    "sector": "3",
+    "years": [
+      [2000, 2000],
+      [2001, 2001],
+      [2002, 2002],
+      [2003, 2003],
+      [2004, 2004],
+      [2005, 2005],
+      [2006, 2006],
+      [2007, 2007],
+      [2008, 2008],
+      [2009, 2009],
+      [2010, 2010],
+      [2011, 2011],
+      [2012, 2012],
+      [2013, 2013],
+      [2014, 2014],
+      [2015, 2015],
+      [2016, 2016]
+    ],
+    "premium": [
+      [2000, 19.8],
+      [2001, 19.8],
+      [2002, 19.8],
+      [2003, 20.2],
+      [2004, 20.2],
+      [2005, 20.2],
+      [2006, 16.7],
+      [2007, 16.7],
+      [2008, 16.7],
+      [2009, 18.8],
+      [2010, 18.8],
+      [2011, 18.8],
+      [2012, 17.6],
+      [2013, 17.6],
+      [2014, 17.6],
+      [2015, 18.1],
+      [2015, 18.1]
+    ],
+    "claims": [
+      [2000, 5],
+      [2001, 8],
+      [2002, 11],
+      [2003, 16],
+      [2004, 11],
+      [2005, 17],
+      [2006, 19],
+      [2007, 27],
+      [2008, 12],
+      [2009, 39],
+      [2010, 45],
+      [2011, 51],
+      [2012, 62],
+      [2013, 47],
+      [2014, 70],
+      [2015, 69],
+      [2016, 87]
+    ]
+  }
+  ,{
+    "name": "40-49",
+    "sector": "4",
+    "years": [
+      [2000, 2000],
+      [2001, 2001],
+      [2002, 2002],
+      [2003, 2003],
+      [2004, 2004],
+      [2005, 2005],
+      [2006, 2006],
+      [2007, 2007],
+      [2008, 2008],
+      [2009, 2009],
+      [2010, 2010],
+      [2011, 2011],
+      [2012, 2012],
+      [2013, 2013],
+      [2014, 2014],
+      [2015, 2015],
+      [2016, 2016]
+    ],
+    "premium": [
+      [2000, 11.8],
+      [2001, 11.8],
+      [2002, 11.8],
+      [2003, 12.2],
+      [2004, 12.2],
+      [2005, 12.2],
+      [2006, 11.6],
+      [2007, 11.6],
+      [2008, 11.6],
+      [2009, 12.8],
+      [2010, 12.8],
+      [2011, 12.8],
+      [2012, 13.6],
+      [2013, 13.6],
+      [2014, 13.6],
+      [2015, 16.2],
+      [2016, 16.2]
+    ],
+    "claims": [
+       [2000, 4],
+       [2001, 5],
+      [2002, 8],
+      [2003, 11],
+      [2004, 16],
+      [2005, 11],
+      [2006, 17],
+      [2007, 19],
+      [2008, 27],
+      [2009, 12],
+      [2010, 39],
+      [2011, 45],
+      [2012, 51],
+      [2013, 62],
+      [2014, 47],
+      [2015, 70],
+      [2016, 69]
+    ]
+  }
+  ,{
+    "name": "50-59",
+    "sector": "5",
+    "years": [
+      [2000, 2000],
+      [2001, 2001],
+      [2002, 2002],
+      [2003, 2003],
+      [2004, 2004],
+      [2005, 2005],
+      [2006, 2006],
+      [2007, 2007],
+      [2008, 2008],
+      [2009, 2009],
+      [2010, 2010],
+      [2011, 2011],
+      [2012, 2012],
+      [2013, 2013],
+      [2014, 2014],
+      [2015, 2015],
+      [2016, 2016]
+    ],
+    "premium": [
+      [2000, 6.7],
+      [2001, 6.7],
+      [2002, 6.7],
+      [2003, 6.2],
+      [2004, 6.2],
+      [2005, 6.2],
+      [2006, 7.0],
+      [2007, 7.0],
+      [2008, 7.0],
+      [2009, 8.8],
+      [2010, 8.8],
+      [2011, 8.8],
+      [2012, 11.1],
+      [2013, 11.1],
+      [2014, 11.1],
+      [2015, 11.7],
+      [2016, 11.7]
+    ],
+    "claims": [
+      [2000, 6],
+      [2001, 9],
+      [2002, 11],
+      [2003, 19],
+      [2004, 21],
+      [2005, 18],
+      [2006, 19],
+      [2007, 29],
+      [2008, 32],
+      [2009, 41],
+      [2010, 46],
+      [2011, 59],
+      [2012, 63],
+      [2013, 67],
+      [2014, 75],
+      [2015, 58],
+      [2016, 67]
+    ]
+  },{
+    "name": "60+ ",
+    "sector": "6",
+    "years": [
+      [2000, 2000],
+      [2001, 2001],
+      [2002, 2002],
+      [2003, 2003],
+      [2004, 2004],
+      [2005, 2005],
+      [2006, 2006],
+      [2007, 2007],
+      [2008, 2008],
+      [2009, 2009],
+      [2010, 2010],
+      [2011, 2011],
+      [2012, 2012],
+      [2013, 2013],
+      [2014, 2014],
+      [2015, 2015],
+      [2016, 2016]
+    ],
+    "premium": [
+       [2000, 3.9],
+      [2001, 3.9],
+      [2002, 3.9],
+      [2003, 4.0],
+      [2004, 4.0],
+      [2005, 4.0],
+      [2006, 4.3],
+      [2007, 4.3],
+      [2008, 4.3],
+      [2009, 5.2],
+      [2010, 5.2],
+      [2011, 5.2],
+      [2012, 6.4],
+      [2013, 6.4],
+      [2014, 6.4],
+      [2015, 6.9],
+      [2016, 6.9]
+    ],
+    "claims": [
+      [2000, 16],
+      [2001, 21],
+      [2002, 26],
+      [2003, 36],
+      [2004, 46],
+      [2005, 57],
+      [2006, 45],
+      [2007, 37],
+      [2008, 49],
+      [2009, 36],
+      [2010, 50],
+      [2011, 59],
+      [2012, 56],
+      [2013, 57],
+      [2014, 59],
+      [2015, 67],
+      [2016, 81]
+    ]
+  }
+
+  ];
+  
+  function x(d) {
+    return d.years;
+  }
+  
+  function y(d) {
+    return d.premium;
+  }
+  
+  function radius(d) {
+    return d.premium*4000;
+  }
+  
+  function color(d) {
+    return d.sector;
+  }
+  
+  function key(d) {
+    return d.name;
+  }
+
+
+  
+  var currentCountry = "";
+  
+  // Chart dimensions.
+  var margin = {
+      top: 19.5,
+      right: 19.5,
+      bottom: 19.5,
+      left: 39.5
+    },
+    width = 800 - margin.right,
+    height = 500 - margin.top - margin.bottom,
+    yearMargin = 10;
+  
+  // Various scales. These domains make assumptions of data, naturally.
+  var xScale = d3.scale.linear().domain([1999, 2017]).range([0, width]),
+    yScale = d3.scale.linear().domain([0, 40]).range([height, 0]),
+    radiusScale = d3.scale.linear().domain([10000, 100000]).range([0, 50]),
+    colorScale = d3.scale.category10();
+  
+  // The x & y axes.
+  formatter = d3.format(".0%");
+  var xAxis = d3.svg.axis().orient("bottom").scale(xScale),
+    yAxis = d3.svg.axis().scale(yScale).orient("left");
+  
+  // Create the SVG container and set the origin.
+  var svg = d3.select("#chart").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  
+  // Add the x-axis.
+  svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
+  
+  // Add the y-axis.
+  svg.append("g")
+    .attr("class", "y axis")
+    .call(yAxis);
+  
+  // Add an x-axis label.
+  svg.append("text")
+    .attr("class", "x label")
+    .attr("text-anchor", "end")
+    .attr("x", width)
+    .attr("y", height - 6)
+    .text("Years");
+  
+  // Add a y-axis label.
+  svg.append("text")
+    .attr("class", "y label")
+    .attr("text-anchor", "end")
+    .attr("y", 6)
+    .attr("dy", ".75em")
+    .attr("transform", "rotate(-90)")
+    .text("Percentage of crimes");
+  
+  // Add the year label; the value is set on transition.
+  var label = svg.append("text")
+    .attr("class", "year label")
+    .attr("text-anchor", "end")
+    .attr("y", height - 24)
+    .attr("x", width)
+    .text(2000);
+  
+  var country = svg.append("text")
+    .attr("class", "country")
+    .attr("y", height - margin.bottom)
+    .attr("x", margin.left)
+    .text("");
+  
+  // Load the data.
+  drawMotionChart(data);
+  
+  function drawMotionChart(nations) {
+  
+    var currentCountries = "";
+  
+    // A bisector since many nation's data is sparsely-defined.
+    var bisect = d3.bisector(function(d) {
+      return d[0];
+    });
+  
+    // Add a dot per nation. Initialize the data at 1990, and set the colors.
+    var tooltip = d3.select("body")
+      .append("div")
+      .style("position", "absolute")
+      .style("z-index", "10")
+      .style("visibility", "hidden")
+      .text("a simple tooltip");
+  
+    tooltip.text("my tooltip text");
+  
+    var dots = svg.append("g")
+      .attr("class", "dots");
+  
+    var dot = dots.selectAll(".dot")
+      .data(interpolateData(2016))
+      .enter().append("circle")
+      .attr("class", "dot")
+      .style("fill", function(d) {
+        return colorScale(color(d));
+      })
+      .on("mouseover", function(d) {
+        tooltip.html("<strong>Age Group:</strong> " + d.name + "<br><strong>Percentage:</strong>"+ d.premium);
+        tooltip.attr('class', 'd3-tip');
+        return tooltip.style("visibility", "visible");
+      })
+      .on("mousemove", function(d) {
+        tooltip.html("<strong>Age Group:</strong> " + d.name + "<br><strong>Percentage:</strong>"+ d.premium);
+        return tooltip.style("top", (d3.event.pageY - 10) + "px").style("left", (d3.event.pageX + 10) + "px");
+      })
+      .on("mouseout", function(d) {
+        return tooltip.style("visibility", "hidden");
+      })
+      .call(position)
+      .sort(order);
+  
+    // Add a title.
+    dot.append("text")
+      .text(function(d) {
+        return d.name;
+      });
+  
+    // Add an overlay for the year label.
+    var box = label.node().getBBox();
+  
+    var overlay = svg.append("rect")
+      .attr("class", "overlay")
+      .attr("x", box.x)
+      .attr("y", box.y)
+      .attr("width", box.width)
+      .attr("height", box.height)
+      .on("mouseover", enableInteraction);
+  
+    // Start a transition that interpolates the data based on year.
+    svg.transition()
+      .duration(30000)
+      .ease("linear")
+      .tween("year", tweenYear)
+      .each("end", enableInteraction);
+  
+    // Positions the dots based on data.
+    function position(dot) {
+      dot.attr("cx", function(d) {
+          return xScale(x(d));
+        })
+        .attr("cy", function(d) {
+          return yScale(y(d));
+        })
+        .attr("r", function(d) {
+          return radiusScale(radius(d));
+        });
+    }
+  
+    // Defines a sort order so that the smallest dots are drawn on top.
+    function order(a, b) {
+      return radius(b) - radius(a);
+    }
+  
+    // After the transition finishes, you can mouseover to change the year.
+    function enableInteraction() {
+      var yearScale = d3.scale.linear()
+        .domain([2000, 2016])
+        .range([box.x + 10, box.x + box.width - 10])
+        .clamp(true);
+  
+      // Cancel the current transition, if any.
+      svg.transition().duration(0);
+  
+      overlay.on("mouseover", mouseover)
+        .on("mouseout", mouseout)
+        .on("mousemove", mousemove)
+        .on("touchmove", mousemove);
+  
+      function mouseover() {
+        label.classed("active", true);
+      }
+  
+      function mouseout() {
+        label.classed("active", false);
+      }
+  
+      function mousemove() {
+        displayYear(yearScale.invert(d3.mouse(this)[0]));
+      }
+    }
+  
+    // Tweens the entire chart by first tweening the year, and then the data.
+    // For the interpolated data, the dots and label are redrawn.
+    function tweenYear() {
+      var year = d3.interpolateNumber(2000, 2016);
+      return function(t) {
+        displayYear(year(t));
+      };
+    }
+  
+    // Updates the display to show the specified year.
+    function displayYear(year) {
+      dot.data(interpolateData(year), key).call(position).sort(order);
+      label.text(Math.round(year));
+    }
+  
+    // Interpolates the dataset for the given (fractional) year.
+    function interpolateData(year) {
+      return nations.map(function(d) {
+        return {
+          name: d.name,
+          sector: d.sector,
+          years: interpolateValues(d.years, year),
+          premium: interpolateValues(d.premium, year),
+          claims: interpolateValues(d.claims, year)
+        };
+      });
+    }
+  
+    // Finds (and possibly interpolates) the value for the specified year.
+    function interpolateValues(values, year) {
+      var i = bisect.left(values, year, 0, values.length - 1),
+        a = values[i];
+      if (i > 0) {
+        var b = values[i - 1],
+          t = (year - a[0]) / (b[0] - a[0]);
+        return a[1] * (1 - t) + b[1] * t;
+      }
+      return a[1];
+    }
+  }
+
+
+
+  ///////////////////////////////// Map  /////////////////////////////////////////
+    
+  var map;
+function initMap() {
+  map = new google.maps.Map(document.getElementById("map"), {
+    center: { lat: -25.2744, lng: 133.7751 },
+    zoom: 3
+  });
+  var myLatLng = {lat: -37.4713, lng: 144.7852};
+  var myLatLng2 = {lat: -31.2532, lng: 146.9211};
+  var myLatLng3 = {lat: -20.9176, lng: 142.7028};
+  var myLatLng4 = {lat: -19.4914, lng: 132.5510};
+  var myLatLng5 = {lat: -27.6728, lng: 121.6283};
+  var myLatLng6 = {lat: -30.0002, lng: 136.2092};
+  var marker1 = new google.maps.Marker({
+    position: myLatLng,
+    map: map,
+    title: 'Victoria : 819.9kg Drug'
+  });
+  var marker2 = new google.maps.Marker({
+    position: myLatLng2,
+    map: map,
+    title: 'NSW : 2397.8kg Drug'
+  });
+  var marker3 = new google.maps.Marker({
+    position: myLatLng3,
+    map: map,
+    title: 'Qd : 576.6kg Drug'
+  });
+  var marker4 = new google.maps.Marker({
+    position: myLatLng4,
+    map: map,
+    title: 'NT : 27.4kg Drug'
+  });
+  var marker5 = new google.maps.Marker({
+    position: myLatLng5,
+    map: map,
+    title: 'WA : 67.9g Drug'
+  });
+  var marker6 = new google.maps.Marker({
+    position: myLatLng6,
+    map: map,
+    title: 'SA : 129.2g Drug'
+  });
+}
+
+/////////////////////////////////  Pie chart
+
+d3.csv("data.csv", function(data) {
+
+///////////////////////
+// Chart Size Setup
+var margin = { top: 35, right: 0, bottom: 30, left: 0 };
+
+var width = 800- margin.left - margin.right;
+var height = 400 - margin.top - margin.bottom;
+
+var chart = d3.select(".chart")
+    .attr("width", 800)
+    .attr("height", 400)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+///////////////////////
+// Scales
+var x = d3.scale.ordinal()
+    .domain(data.map(function(d) { return d['state']; }))
+    .rangeRoundBands([0, width], .1);
+
+var y = d3.scale.linear()
+    .domain([0, 300])
+    .range([height, 0]);
+
+///////////////////////
+// Axis
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
+
+chart.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
+
+chart.append("g")
+    .attr("class", "y axis")
+    .call(yAxis);
+
+///////////////////////
+// Title
+chart.append("text")
+  .text('Bar Chart!')
+  .attr("text-anchor", "middle")
+  .attr("class", "graph-title")
+  .attr("y", -10)
+  .attr("x", width / 2.0);
+
+///////////////////////
+// Bars
+var bar = chart.selectAll(".bar")
+    .data(data)
+  .enter().append("rect")
+    .attr("class", "bar")
+    .attr("x", function(d) { return x(d['state']); })
+    .attr("y", height)
+    .attr("width", x.rangeBand())
+    .attr("height", 0);
+
+bar.transition()
+    .duration(1500)
+    .ease("elastic")
+    .attr("y", function(d) { return y(d['starbucks']); })
+    .attr("height", function(d) { return height - y(d['starbucks']); })
+
+///////////////////////
+// Tooltips
+var tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip");
+
+bar.on("mouseover", function(d) {
+      tooltip.html(d['state']+ ":" + d['starbucks'])
+          .style("visibility", "visible");
+    })
+    .on("mousemove", function(d) {
+      tooltip.style("top", event.pageY - (tooltip[0][0].clientHeight + 5) + "px")
+          .style("left", event.pageX - (tooltip[0][0].clientWidth / 2.0) + "px");
+    })
+    .on("mouseout", function(d) {
+      tooltip.style("visibility", "hidden");
+    });
+});
+
+//////////////////////////////////// bar ////////////////////////////////////
+
+
+</script>
+
+</body>
+</html>

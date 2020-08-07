@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<!-- Color scale -->
+<script src="//d3js.org/d3.v3.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <title>Gender wise usage</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKHna7FBmZu985uSFIKv2EOQ0ZK2FZV10&callback=initMap&libraries=&v=weekly"
+      defer
+    ></script>
+  <style>
+  .fakeimg {
+    height: 200px;
+    background: #aaa;
+  }
+  </style>
+</head>
+<body>
+
+<div class="jumbotron text-center" style="margin-bottom:0;background: black">
+  <h1 style="color:white">Drug Usage and Crimes in Australia</h1>
+  <h4 style="color:white">Gender wise comparisons - 2016</h4> 
+</div>
+
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+  <a class="navbar-brand" href="index.html">Home</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+</nav>
+
+<div class="container" style="margin-top:30px; margin-left: 300px; float: right;">
+</div>
+
+
+<div id="chart" style="background-color: aqua;">
+<script>
+    function getTextWidth(text, fontSize, fontName) {
+        c = document.createElement("canvas");
+        ctx = c.getContext("2d");
+        ctx.font = fontSize + ' ' + fontName;
+        return ctx.measureText(text).width;
+    }
+
+    function DataSegregator(array, on) {
+        var SegData;
+        OrdinalPositionHolder = {
+            valueOf: function () {
+                thisObject = this;
+                keys = Object.keys(thisObject);
+                keys.splice(keys.indexOf("valueOf"), 1);
+                keys.splice(keys.indexOf("keys"), 1);
+                return keys.length == 0 ? -1 : d3.max(keys, function (d) { return thisObject[d] })
+            }
+            , keys: function () {
+                keys = Object.keys(thisObject);
+                keys.splice(keys.indexOf("valueOf"), 1);
+                keys.splice(keys.indexOf("keys"), 1);
+                return keys;
+            }
+        }
+        array[0].map(function (d) { return d[on] }).forEach(function (b) {
+            value = OrdinalPositionHolder.valueOf();
+            OrdinalPositionHolder[b] = OrdinalPositionHolder > -1 ? ++value : 0;
+        })
+
+        SegData = OrdinalPositionHolder.keys().map(function () {
+            return [];
+        });
+
+        array.forEach(function (d) {
+            d.forEach(function (b) {
+                SegData[OrdinalPositionHolder[b[on]]].push(b);
+            })
+        });
+
+        return SegData;
+    }
+
+
+    Data = [
+{ Date: "14-19", Categories: [{ Name: "Male", Value: 17.1 }, { Name: "Female", Value: 14.2 }, { Name: "Persons", Value: 15.9 }], LineCategory: [{ Name: "Line1", Value: 69 }, { Name: "Line2", Value: 63 }] },
+{ Date: "20-29", Categories: [{ Name: "Male", Value: 31.7 }, { Name: "Female", Value: 24.7 }, { Name: "Persons", Value: 28.2 }], LineCategory: [{ Name: "Line1", Value: 89 }, { Name: "Line2", Value: 96 }] },
+{ Date: "30-39", Categories: [{ Name: "Male", Value: 20.2 }, { Name: "Female", Value: 16.1 }, { Name: "Persons", Value: 18.1 }], LineCategory: [{ Name: "Line1", Value: 63 }, { Name: "Line2", Value: 35 }] },
+{ Date: "40-49", Categories: [{ Name: "Male", Value: 20.1 }, { Name: "Female", Value: 12.4 }, { Name: "Persons", Value: 16.2 }], LineCategory: [{ Name: "Line1", Value: 86 }, { Name: "Line2", Value: 45 }] },
+{ Date: "50-59", Categories: [{ Name: "Male", Value: 15.0 }, { Name: "Female", Value: 8.5 }, { Name: "Persons", Value: 11.7 }], LineCategory: [{ Name: "Line1", Value: 65 }, { Name: "Line2", Value: 63 }] },
+{ Date: "60+", Categories: [{ Name: "Male", Value: 7.9 }, { Name: "Female", Value: 5.9 }, { Name: "Persons", Value: 6.9 }], LineCategory: [{ Name: "Line1", Value: 75 }, { Name: "Line2", Value: 85 }] }
+    ]
+
+    var margin = { top: 20, right: 30, bottom: 60, left: 300 },
+        width = 1000 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+
+    var textWidthHolder = 0;
+    /// Adding Date in LineCategory
+    Data.forEach(function (d) {
+        d.LineCategory.forEach(function (b) {
+            b.Date = d.Date;
+        })
+    });
+
+
+
+
+    var Categories = new Array();
+    // Extension method declaration
+
+    Categories.pro
+
+    var Data;
+    var ageNames;
+    var x0 = d3.scale.ordinal()
+        .rangeRoundBands([0, width], .1);
+    var XLine = d3.scale.ordinal()
+        .rangeRoundPoints([0, width], .1);
+    var x1 = d3.scale.ordinal();
+
+    var y = d3.scale.linear()
+        .range([height, 0]);
+
+    var YLine = d3.scale.linear().range([height, 0])
+    .domain([0, d3.max(Data, function (d) { return d3.max(d.LineCategory, function (b) { return b.Value }) })]);
+
+    var color = d3.scale.ordinal()
+        .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+
+    var line = d3.svg.line().x(function (d) {
+        return x0(d.Date) + x0.rangeBand() / 2;
+    }).y(function (d) { return YLine(d.Value) });
+
+
+
+
+    var xAxis = d3.svg.axis()
+        .scale(x0)
+        .orient("bottom");
+
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left")
+        .tickFormat(d3.format(".2s"));
+
+    var YLeftAxis = d3.svg.axis().scale(YLine).orient("right").tickFormat(d3.format(".2s"));
+
+    var svg = d3.select("body").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+
+
+
+    // Bar Data categories
+    Data.forEach(function (d) {
+        d.Categories.forEach(function (b) {
+            if (Categories.findIndex(function (c) { return c.Name===b.Name}) == -1) {
+                b.Type = "bar";
+                console.log(JSON.stringify(b))
+                Categories.push(b)
+            }
+        })
+    });
+
+
+    // Line Data categories
+    Data.forEach(function (d) {
+        d.LineCategory.forEach(function (b) {
+            if (Categories.findIndex(function (c) { return c.Name === b.Name }) == -1) {
+                b.Type = "line";
+                console.log(JSON.stringify(b))
+                Categories.push(b)
+            }
+        })
+    });
+
+    // Processing Line data
+    lineData = DataSegregator(Data.map(function (d) { return d.LineCategory }), "Name");
+
+    // Line Coloring
+    LineColor = d3.scale.ordinal();
+    LineColor.domain(Categories.filter(function (d) { return d.Type == "line" }).map(function (d) { return d.Name }));
+    LineColor.range(["#d40606", "#06bf00", "#98bdc5", "#671919", "#0b172b"])
+    x0.domain(Data.map(function (d) { return d.Date; }));
+    XLine.domain(Data.map(function (d) { return d.Date; }));
+    x1.domain(Categories.filter(function (d) { return d.Type == "bar" }).map(function (d) { return d.Name})).rangeRoundBands([0, x0.rangeBand()]);
+    y.domain([0, d3.max(Data, function (d) { return d3.max(d.Categories, function (d) { return d.Value; }); })]);
+
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+      .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text("Percentage");
+
+
+    var state = svg.selectAll(".state")
+        .data(Data)
+      .enter().append("g")
+        .attr("class", "state")
+        .attr("transform", function (d) { return "translate(" + x0(d.Date) + ",0)"; });
+
+    state.selectAll("rect")
+        .data(function (d) { return d.Categories; })
+      .enter().append("rect")
+        .attr("width", x1.rangeBand())
+        .attr("x", function (d) { return x1(d.Name); })
+        .attr("y", function (d) { return y(d.Value); })
+        //.attr("height", function (d) { return height - y(d.Value); })
+        .style("fill", function (d) { return color(d.Name); })
+        .transition().delay(500).attrTween("height", function (d) {
+            var i = d3.interpolate(0, height - y(d.Value));
+            return function (t)
+            {
+                return i(t);
+            }
+        });
+
+    // drawaing lines
+
+
+
+    // Legends
+
+    var LegendHolder = svg.append("g").attr("class", "legendHolder");
+    var legend = LegendHolder.selectAll(".legend")
+        .data(Categories.map(function (d) { return {"Name":d.Name,"Type":d.Type}}))
+      .enter().append("g")
+        .attr("class", "legend")
+        .attr("transform", function (d, i) { return "translate(0," +( height+ margin.bottom/2 )+ ")"; })
+        .each(function (d,i) {
+            //  Legend Symbols
+
+
+            d3.select(this).append("rect")
+            .attr("width", function () { return 18 })
+            .attr("x", function (b) {
+
+                left = (i+1) * 15 + i * 18 + i * 5 + textWidthHolder;
+                return left;
+            })
+             .attr("y", function (b) { return b.Type == 'bar'?0:7})
+            .attr("height", function (b) { return b.Type== 'bar'? 18:5 })
+            .style("fill", function (b) { return b.Type == 'bar' ? color(d.Name) : LineColor(d.Name) });
+
+            //  Legend Text
+
+            d3.select(this).append("text")
+            .attr("x", function (b) {
+
+                left = (i+1) * 15 + (i+1) * 18 + (i + 1) * 5 + textWidthHolder;
+
+                return left;
+            })
+            .attr("y", 9)
+            .attr("dy", ".35em")
+            .style("text-anchor", "start")
+            .text(d.Name);
+
+            textWidthHolder += getTextWidth(d.Name, "10px", "calibri");
+        });
+
+
+    // Legend Placing
+
+    d3.select(".legendHolder").attr("transform", function (d) {
+        thisWidth = d3.select(this).node().getBBox().width;
+        return "translate(" + ((width) / 2 - thisWidth / 2) + ",0)";
+    })
+
+
+</script>
+</div>
+<div id="info" style="background-color: #aaa; float: center; margin-left: 5%;margin-right: 5%;">
+    <h6> Gender wise comparison along with different age groups is plotted in the bar chart above. The plot for persons show the average percentage values among the people. 
+         </h6>
+</div>
+</body>
+<style>
+    body {
+        font: 10px sans-serif;
+        align-items: center;
+    }
+
+
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+
+    .bar {
+        fill: steelblue;
+    }
+
+    .x.axis path {
+        display: none;
+    }
+</style>
+</html>
